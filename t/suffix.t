@@ -1,6 +1,5 @@
 use v5.26;
 use Test::More 1;
-use File::Basename        qw(basename);
 use File::Spec::Functions qw(catfile);
 use Mojo::Util            qw(dumper);
 
