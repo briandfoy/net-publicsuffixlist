@@ -141,11 +141,11 @@ sub remove_suffix ( $self, $suffix ) { delete $self->{suffix}{$suffix}; $self }
 
 =item suffix_exists( STRING )
 
-Return true if STRING is a known public suffix.
+Return the invocant if the suffix exists, and the empty list otherwise.
 
 =cut
 
-sub suffix_exists ( $self, $suffix ) { exists $self->{suffix}{$suffix} }
+sub suffix_exists ( $self, $suffix ) { exists $self->{suffix}{$suffix} ? $self : () }
 
 =item suffixes_in_host( HOST )
 
