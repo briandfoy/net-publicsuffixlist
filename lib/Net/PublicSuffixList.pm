@@ -8,7 +8,7 @@ use warnings;
 no warnings;
 
 use Carp                  qw(carp);
-use File::Basename        qw(dirname);
+use File::Basename        qw(basename dirname);
 use File::Path            qw(make_path);
 use File::Spec::Functions qw(catfile);
 
@@ -45,15 +45,14 @@ sub new ( $class, %args ) {
 	$self->init( \%args );
 	}
 
-=item init
-
-=cut
-
 sub init ( $self, $args ) {
 	my %args = ( $self->defaults->%*, $args->%* );
 
 	while( my($k, $v) = each %args ) {
 		$self->{$k} = $v;
+		if( $k eq 'local_path' ) {
+			$self->{local_file} = basename( $v );
+			}
 		}
 
 	my $method = do {
