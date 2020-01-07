@@ -1,6 +1,8 @@
 use v5.26;
 use Test::More 1;
-use Mojo::Util qw(dumper);
+use File::Basename        qw(basename);
+use File::Spec::Functions qw(catfile);
+use Mojo::Util            qw(dumper);
 
 my $class = 'Net::PublicSuffixList';
 
@@ -104,27 +106,48 @@ subtest parse_list => sub {
 		}
 	};
 
-subtest parse_list => sub {
+subtest parse_list_strip => sub {
 	my $obj = $class->new( no_net => 1, no_local => 1 );
 	can_ok( $class, 'parse_list' );
 
-	my @suffixes = qw( co.uk foo.bar com );
-	foreach my $suffix ( @suffixes ) {
-		ok( ! $obj->suffix_exists( $suffix ), "Suffix <$suffix> does not exist yet" );
+	my @suffixes = (
+		[ qw( *.com    com   ) ],
+		[ qw( *net     net   ) ],
+		[ qw( *.co.uk  co.uk ) ],
+		);
+	foreach my $pair ( @suffixes ) {
+		foreach my $suffix ( $pair->@* ) {
+			ok( ! $obj->suffix_exists( $suffix ), "Suffix <$suffix> does not exist yet" );
+			}
 		}
 
-	my $body = join "\n", @suffixes;
+	my $body = join "\n", map { $_->[0] } @suffixes;
 
 	my $result = $obj->parse_list( \$body );
 	isa_ok( $result, $class );
 
-	foreach my $suffix ( @suffixes ) {
-		ok( $obj->suffix_exists( $suffix ), "Suffix <$suffix> does not exist yet" );
+	foreach my $pair ( @suffixes ) {
+		ok(   $obj->suffix_exists( $pair->[1] ), "Suffix <$pair->[1]> now exists for <$pair->[0]>" );
+		ok( ! $obj->suffix_exists( $pair->[0] ), "Suffix <$pair->[0]> does not exist" );
 		}
 	};
 
+diag( "You shouldn't see any more 'no way to fetch' warnings." );
 
-diag( "# You shouldn't see any more 'no way to fetch' warnings." );
+subtest local_path => sub {
+	my $local_file = 'test.dat';
+	my $local_path = catfile( 'corpus', $local_file );
+	ok( -e $local_path, "Local file <$local_path> exists" );
+
+	my $obj = $class->new( no_net => 1, local_path => $local_path );
+	diag( dumper( $obj ) );
+	isa_ok( $obj, $class );
+	can_ok( $obj, 'local_path' );
+
+	is( $obj->local_file, $local_file );
+	is( $obj->local_path, $local_path );
+	is( $obj->{source}, 'local_file' );
+	};
 
 
 done_testing();
