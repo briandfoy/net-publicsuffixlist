@@ -330,17 +330,6 @@ sub default_local_file ( $self ) {
 	'public_suffix_list.dat'
 	}
 
-=item TO_JSON
-
-This hook method allows JSON modules to turn the suffix list into
-JSON.
-
-=cut
-
-sub TO_JSON ( $self ) {
-	$self->{suffix}
-	}
-
 =back
 
 =head1 TO DO
