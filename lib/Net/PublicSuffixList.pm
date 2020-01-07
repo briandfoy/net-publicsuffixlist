@@ -78,6 +78,7 @@ sub init ( $self, $args ) {
 
 =item defaults
 
+A hash of the default values for everything.
 
 =cut
 
