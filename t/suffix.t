@@ -140,7 +140,6 @@ subtest local_path => sub {
 	ok( -e $local_path, "Local file <$local_path> exists" );
 
 	my $obj = $class->new( no_net => 1, local_path => $local_path );
-	diag( dumper( $obj ) );
 	isa_ok( $obj, $class );
 	can_ok( $obj, 'local_path' );
 
