@@ -145,7 +145,47 @@ subtest local_path => sub {
 	is( $obj->local_file, $local_file );
 	is( $obj->local_path, $local_path );
 	is( $obj->{source}, 'local_file' );
+
+	my @suffixes = qw( com net co.uk email badger koala.au );
+	foreach my $suffix ( @suffixes ) {
+		ok( $obj->suffix_exists( $suffix ), "Suffix <$suffix> exists" );
+		}
 	};
 
+subtest suffixes => sub {
+	my $local_file = 'test.dat';
+	my $local_path = catfile( 'corpus', $local_file );
+	ok( -e $local_path, "Local file <$local_path> exists" );
+
+	my $obj = $class->new( no_net => 1, local_path => $local_path );
+	isa_ok( $obj, $class );
+	can_ok( $obj, 'suffixes_in_host' );
+
+	my $host = 'wildfire.koala.au';
+
+	subtest suffixes_in_host => sub {
+		can_ok( $obj, 'suffixes_in_host' );
+		my $suffixes = $obj->suffixes_in_host( $host );
+		ok( $suffixes->@* == 2, "There are two suffixes in $host" );
+
+		is( $suffixes->@[0], 'au',        'First suffix is right' );
+		is( $suffixes->@[1], 'koala.au',  'Second suffix is right' );
+		};
+
+	subtest longest_suffix_in_host => sub {
+		can_ok( $obj, 'longest_suffix_in_host' );
+		is( $obj->longest_suffix_in_host( $host ), 'koala.au' );
+		};
+
+	subtest split_host => sub {
+		can_ok( $obj, 'split_host' );
+		my $result = $obj->split_host( $host );
+		isa_ok( $result, ref {}, "split_host returns a hash ref" );
+		is( $result->{suffix}, 'koala.au' );
+		is( $result->{short}, 'wildfire' );
+		is( $result->{host}, $host );
+		}
+
+	};
 
 done_testing();
