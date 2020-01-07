@@ -42,10 +42,10 @@ Possible keys:
 
 sub new ( $class, %args ) {
 	my $self = bless {}, $class;
-	$self->init( \%args );
+	$self->_init( \%args );
 	}
 
-sub init ( $self, $args ) {
+sub _init ( $self, $args ) {
 	my %args = ( $self->defaults->%*, $args->%* );
 
 	while( my($k, $v) = each %args ) {
