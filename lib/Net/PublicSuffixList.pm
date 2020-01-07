@@ -65,6 +65,7 @@ sub init ( $self, $args ) {
 			}
 		else {
 			carp "No way to fetch list! Check your settings for no_local or no_net";
+			return $self;
 			}
 		};
 
