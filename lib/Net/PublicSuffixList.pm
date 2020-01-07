@@ -119,9 +119,16 @@ sub parse_list ( $self, $list ) {
 
 Add STRING to the known public suffices. This returns the object itself.
 
+Before this adds the suffix, it strips off leading C<*> and C<.*>
+characters. Some sources specify C<*.foo.bar>, but this adds C<foo.bar>.
+
 =cut
 
-sub add_suffix ( $self, $suffix ) { $self->{suffix}{$suffix}++; $self }
+sub add_suffix ( $self, $suffix ) {
+	$suffix =~ s/\A[*.]+//;
+	$self->{suffix}{$suffix}++;
+	$self
+	}
 
 =item remove_suffix( STRING )
 
