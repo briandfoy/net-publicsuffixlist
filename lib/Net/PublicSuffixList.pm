@@ -50,7 +50,7 @@ sub new ( $class, %args ) {
 =cut
 
 sub init ( $self, $args ) {
-	my %args = $self->defaults->%*, $args->%*;
+	my %args = ( $self->defaults->%*, $args->%* );
 
 	while( my($k, $v) = each %args ) {
 		$self->{$k} = $v;
