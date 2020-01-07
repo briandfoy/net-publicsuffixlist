@@ -16,7 +16,7 @@ subtest new => sub {
 	isa_ok( $class->new, $class );
 	};
 
-diag( "# you'll see a warnings about 'no way to fetch' for this test. That's fine." );
+diag( "You'll see a warnings about 'no way to fetch' for this test. That's fine." );
 
 subtest bare => sub {
 	my $obj = $class->new( no_local => 1, no_net => 1 );
