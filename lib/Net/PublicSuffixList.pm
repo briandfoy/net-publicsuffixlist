@@ -75,7 +75,7 @@ sub init ( $self, $args ) {
 	$self;
 	}
 
-=item * defaults
+=item defaults
 
 
 =cut
@@ -91,7 +91,7 @@ sub defaults ( $self ) {
 	$hash;
 	}
 
-=item * parse_list( STRING_REF )
+=item parse_list( STRING_REF )
 
 Take a scalar reference to the contents of the public suffix list,
 find all the suffices and add them to the object.
@@ -113,7 +113,7 @@ sub parse_list ( $self, $list ) {
 	$self;
 	}
 
-=item * add_suffix( STRING )
+=item add_suffix( STRING )
 
 Add STRING to the known public suffices. This returns the object itself.
 
@@ -121,7 +121,7 @@ Add STRING to the known public suffices. This returns the object itself.
 
 sub add_suffix ( $self, $suffix ) { $self->{suffix}{$suffix}++; $self }
 
-=item * remove_suffix( STRING )
+=item remove_suffix( STRING )
 
 Remove the STRING as a known public suffices. This returns the object
 itself.
@@ -130,7 +130,7 @@ itself.
 
 sub remove_suffix ( $self, $suffix ) { delete $self->{suffix}{$suffix}; $self }
 
-=item * suffix_exists( STRING )
+=item suffix_exists( STRING )
 
 Return true if STRING is a known public suffix.
 
@@ -138,7 +138,7 @@ Return true if STRING is a known public suffix.
 
 sub suffix_exists ( $self, $suffix ) { exists $self->{suffix}{$suffix} }
 
-=item * suffixes_in_host( HOST )
+=item suffixes_in_host( HOST )
 
 Return an array reference of the publix suffixes in HOST, sorted from
 shortest to longest.
@@ -157,7 +157,7 @@ sub suffixes_in_host ( $self, $host ) {
 	\@suffixes;
 	}
 
-=item * longest_suffix_in_host( HOST )
+=item longest_suffix_in_host( HOST )
 
 Return the longest public suffix in HOST.
 
@@ -167,7 +167,7 @@ sub longest_suffix_in_host ( $self, $host ) {
 	$self->suffixes_in_host( $host )->@[-1];
 	}
 
-=item * split_host( HOST )
+=item split_host( HOST )
 
 Returns a hash reference with these keys:
 
@@ -189,7 +189,7 @@ sub split_host ( $self, $host ) {
 		}
 	}
 
-=item * fetch_list_from_net
+=item fetch_list_from_local
 
 Fetch the public suffix list plaintext file from the path returned
 by C<local_path>. Returns a scalar reference to the text of the raw
@@ -205,7 +205,7 @@ sub fetch_list_from_local ( $self ) {
 	\$data;
 	}
 
-=item * fetch_list_from_net
+=item fetch_list_from_net
 
 Fetch the public suffix list plaintext file from the URL returned
 by C<url>. Returns a scalar reference to the text of the raw
@@ -260,7 +260,7 @@ sub fetch_list_from_net ( $self ) {
 	return \$body;
 	}
 
-=item * url
+=item url
 
 Return the configured URL for the public suffix list.
 
@@ -270,7 +270,7 @@ sub url ( $self ) {
 	$self->{list_url} // $self->default_url
 	}
 
-=item * default_url
+=item default_url
 
 Return the default URL for the public suffix list.
 
@@ -280,7 +280,7 @@ sub default_url ( $self ) {
 	'https://publicsuffix.org/list/public_suffix_list.dat'
 	}
 
-=item * local_path
+=item local_path
 
 Return the configured local path for the public suffix list.
 
@@ -290,7 +290,7 @@ sub local_path ( $self ) {
 	$self->{local_path} // $self->default_local_path
 	}
 
-=item * default_local_path
+=item default_local_path
 
 Return the default local path for the public suffix list.
 
@@ -302,7 +302,7 @@ sub default_local_path ( $self ) {
 	my $file = catfile( $this_dir, $self->default_local_file );
 	}
 
-=item * local_file
+=item local_file
 
 Return the configured filename for the public suffix list.
 
@@ -312,7 +312,7 @@ sub local_file ( $self ) {
 	$self->{local_file} // $self->default_local_file
 	}
 
-=item * default_local_file
+=item default_local_file
 
 Return the default filename for the public suffix list.
 
@@ -322,7 +322,7 @@ sub default_local_file ( $self ) {
 	'public_suffix_list.dat'
 	}
 
-=item * TO_JSON
+=item TO_JSON
 
 This hook method allows JSON modules to turn the suffix list into
 JSON.
