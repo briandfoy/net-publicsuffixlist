@@ -24,11 +24,40 @@ Net::PublicSuffixList - The Mozilla Public Suffix List
 
 	use Net::PublicSuffixList;
 
+	my $psl = Net::PublicSuffixList->new;
+
+	my $host = 'amazon.co.uk';
+
+	# get all the suffixes in host (like, uk and co.uk)
+	my $suffixes = $psl->suffixes_in( $host );
+
+	# get the longest suffix
+	my $suffix   = $psl->longest_suffix_in( $host );
+
+	my $hash     = $psl->split_host( $host );
+
 =head1 DESCRIPTION
+
+I mostly wrote this because I was working on L<App::url> and needed a
+way to figure out which part of a URL was the registered part and with
+was the top-level domain.
+
+The Public Suffix List is essentially a self-reported collection of the
+top-level, generic, country code, or whatever domains.
 
 =over 4
 
 =item new
+
+Create the new object and specify how you'd like to get the data. The
+network file is about 220Kb, so you might want to fetch it once, store
+it, and then use C<local_path> to use it.
+
+The constructor first tries to use a local file. If you've disabled
+that with C<no_local> or the file doesn't exist, it moves on to trying
+the network. If you've disabled the network with C<no_net>, then it
+complains but still returns the object. You can still construct your
+own list with C<add_suffix>.
 
 Possible keys:
 
