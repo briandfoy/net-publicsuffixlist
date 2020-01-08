@@ -44,7 +44,7 @@ my $github    = 'https://github.com/briandfoy/net-publicsuffixlist';
 my $main_file = catfile( 'lib', split /::/, "$module.pm" );
 
 my %WriteMakefile = (
-	'MIN_PERL_VERSION' => '5.008',
+	'MIN_PERL_VERSION' => '5.026',
 
 	'NAME'          => $module,
 	'ABSTRACT_FROM' => $main_file,
@@ -65,7 +65,11 @@ my %WriteMakefile = (
 		},
 
 	'PREREQ_PM' => {
-		'Carp' => '0',
+		'Carp'                  => '0',
+		'File::Basename'        => '0',
+		'File::Path'            => '0',
+		'File::Spec::Functions' => '0',
+		'Mojolicious'           => '8',
 		},
 
 	'META_MERGE' => {
