@@ -146,14 +146,14 @@ Return the invocant if the suffix exists, and the empty list otherwise.
 
 sub suffix_exists ( $self, $suffix ) { exists $self->{suffix}{$suffix} ? $self : () }
 
-=item suffixes_in_host( HOST )
+=item suffixes_in( HOST )
 
 Return an array reference of the publix suffixes in HOST, sorted from
 shortest to longest.
 
 =cut
 
-sub suffixes_in_host ( $self, $host ) {
+sub suffixes_in ( $self, $host ) {
 	my @parts = reverse split /\./, $host;
 	my @suffixes =
 		map  { $_->[0] }
@@ -165,14 +165,14 @@ sub suffixes_in_host ( $self, $host ) {
 	\@suffixes;
 	}
 
-=item longest_suffix_in_host( HOST )
+=item longest_suffix_in( HOST )
 
 Return the longest public suffix in HOST.
 
 =cut
 
-sub longest_suffix_in_host ( $self, $host ) {
-	$self->suffixes_in_host( $host )->@[-1];
+sub longest_suffix_in ( $self, $host ) {
+	$self->suffixes_in( $host )->@[-1];
 	}
 
 =item split_host( HOST )
@@ -187,7 +187,7 @@ Returns a hash reference with these keys:
 =cut
 
 sub split_host ( $self, $host ) {
-	my $suffix = $self->longest_suffix_in_host( $host );
+	my $suffix = $self->longest_suffix_in( $host );
 	my $short  = $host =~ s/\Q.$suffix\E\z//r;
 
 	return	{
@@ -218,6 +218,11 @@ sub fetch_list_from_local ( $self ) {
 Fetch the public suffix list plaintext file from the URL returned
 by C<url>. Returns a scalar reference to the text of the raw
 UTF-8 octets.
+
+If you've set C<cache_dir> in the object, this method attempts to
+cache the response in that directory using C<default_local_file> as
+the filename. This cache is different than C<local_file> although you
+can use it as C<local_file>.
 
 =cut
 

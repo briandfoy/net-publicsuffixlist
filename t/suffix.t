@@ -11,10 +11,6 @@ subtest sanity => sub {
 	can_ok( $class, 'new' );
 	};
 
-subtest new => sub {
-	isa_ok( $class->new, $class );
-	};
-
 diag( "You'll see a warnings about 'no way to fetch' for this test. That's fine." );
 
 subtest bare => sub {
@@ -22,13 +18,16 @@ subtest bare => sub {
 	isa_ok( $obj, $class );
 	ok( $obj->{no_local}, "no_local is true" );
 	ok( $obj->{no_net}, "no_net is true" );
+
+	ok( ! defined $obj->fetch_list_from_local, 'fetch_list_from_local returns undef for no_local = 1' );
+	ok( ! defined $obj->fetch_list_from_net, 'fetch_list_from_net returns undef for no_net = 1' );
 	};
 
 subtest add_suffix => sub {
 	my $obj = $class->new( no_net => 1, no_local => 1 );
 	my $suffix = 'co.uk';
-	isa_ok( $class->new, $class );
-	can_ok( $class, 'suffix_exists', 'add_suffix' );
+	isa_ok( $obj, $class );
+	can_ok( $obj, 'suffix_exists', 'add_suffix' );
 
 	ok( ! $obj->suffix_exists( $suffix ), "Suffix <$suffix> does not exist yet" );
 
@@ -41,8 +40,8 @@ subtest add_suffix => sub {
 subtest add_suffix_strip => sub {
 	my $obj = $class->new( no_net => 1, no_local => 1 );
 	my $suffix = 'co.uk';
-	isa_ok( $class->new, $class );
-	can_ok( $class, 'suffix_exists', 'add_suffix' );
+	isa_ok( $obj, $class );
+	can_ok( $obj, 'suffix_exists', 'add_suffix' );
 
 	my @suffixes = (
 		[ qw( *.com    com   ) ],
@@ -71,8 +70,8 @@ subtest add_suffix_strip => sub {
 subtest remove_suffix => sub {
 	my $obj = $class->new( no_net => 1, no_local => 1 );
 	my $suffix = 'au';
-	isa_ok( $class->new, $class );
-	can_ok( $class, 'suffix_exists', 'add_suffix', 'remove_suffix' );
+	isa_ok( $obj, $class );
+	can_ok( $obj, 'suffix_exists', 'add_suffix', 'remove_suffix' );
 
 	ok( ! $obj->suffix_exists( $suffix ), "Suffix <$suffix> does not exist yet" );
 
@@ -88,7 +87,7 @@ subtest remove_suffix => sub {
 
 subtest parse_list => sub {
 	my $obj = $class->new( no_net => 1, no_local => 1 );
-	can_ok( $class, 'parse_list' );
+	can_ok( $obj, 'parse_list' );
 
 	my @suffixes = qw( co.uk foo.bar com );
 	foreach my $suffix ( @suffixes ) {
@@ -107,7 +106,7 @@ subtest parse_list => sub {
 
 subtest parse_list_strip => sub {
 	my $obj = $class->new( no_net => 1, no_local => 1 );
-	can_ok( $class, 'parse_list' );
+	can_ok( $obj, 'parse_list' );
 
 	my @suffixes = (
 		[ qw( *.com    com   ) ],
@@ -159,22 +158,22 @@ subtest suffixes => sub {
 
 	my $obj = $class->new( no_net => 1, local_path => $local_path );
 	isa_ok( $obj, $class );
-	can_ok( $obj, 'suffixes_in_host' );
+	can_ok( $obj, 'suffixes_in' );
 
 	my $host = 'wildfire.koala.au';
 
-	subtest suffixes_in_host => sub {
-		can_ok( $obj, 'suffixes_in_host' );
-		my $suffixes = $obj->suffixes_in_host( $host );
+	subtest suffixes_in => sub {
+		can_ok( $obj, 'suffixes_in' );
+		my $suffixes = $obj->suffixes_in( $host );
 		ok( $suffixes->@* == 2, "There are two suffixes in $host" );
 
 		is( $suffixes->@[0], 'au',        'First suffix is right' );
 		is( $suffixes->@[1], 'koala.au',  'Second suffix is right' );
 		};
 
-	subtest longest_suffix_in_host => sub {
-		can_ok( $obj, 'longest_suffix_in_host' );
-		is( $obj->longest_suffix_in_host( $host ), 'koala.au' );
+	subtest longest_suffix_in => sub {
+		can_ok( $obj, 'longest_suffix_in' );
+		is( $obj->longest_suffix_in( $host ), 'koala.au' );
 		};
 
 	subtest split_host => sub {

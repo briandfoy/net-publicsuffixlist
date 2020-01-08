@@ -2,3 +2,5 @@ load.t
 pod.t
 pod_coverage.t
 suffix.t
+errors.t
+network.t
