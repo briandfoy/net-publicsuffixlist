@@ -45,6 +45,14 @@ was the top-level domain.
 The Public Suffix List is essentially a self-reported collection of the
 top-level, generic, country code, or whatever domains.
 
+There are other modules that try to do this, but they come with packaged
+(old) versions of the Public Suffix List or have limited functionality.
+
+This module can fetch the most current one for you, use one that you
+provide locally, or even let you completely make it up. You can add
+entries you want but don't show up in the list, and remove ones you don't
+think should be there.
+
 =over 4
 
 =item new
