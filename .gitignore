@@ -8,3 +8,6 @@ MYMETA.*
 cover_db
 Net-*
 *.icould
+MANIFEST*[123456789]
+Changes*[123456789]
+
