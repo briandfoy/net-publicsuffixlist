@@ -78,3 +78,6 @@
 \.releaserc
 \.lwpcookies
 Net-.*
+\bMANIFEST\s\d
+\bChanges\s\d
+
