@@ -141,7 +141,11 @@ sub parse_list ( $self, $list ) {
 		carp "Argument is not a scalar reference";
 		return;
 		}
+
+	my( $line_ending ) = $$list =~ m/(\R)/;
 	open my $string_fh, '<:utf8', $list;
+	$string_fh->input_record_separator( $line_ending );
+
 	while( <$string_fh> ) {
 		chomp;
 		next if( /\A\s*\z/ || m|\A\s*//| );
