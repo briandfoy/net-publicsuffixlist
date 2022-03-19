@@ -385,11 +385,13 @@ sub default_local_file ( $self ) {
 
 L<Domain::PublicSuffix>, L<Mozilla::PublicSuffix>, L<IO::Socket::SSL::PublicSuffix>
 
+L<https://publicsuffix.org/list/public_suffix_list.dat>
+
 =head1 SOURCE AVAILABILITY
 
 This source is in Github:
 
-	http://github.com/briandfoy/net-publicsuffixlist
+	https://github.com/briandfoy/net-publicsuffixlist
 
 =head1 AUTHOR
 
