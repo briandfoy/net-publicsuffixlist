@@ -403,6 +403,8 @@ Copyright © 2020-2022, brian d foy, All Rights Reserved.
 
 You may redistribute this under the terms of the Artistic License 2.0.
 
+The public suffix list is Mozilla Public License 2.0
+
 =cut
 
 1;
