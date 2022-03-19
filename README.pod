@@ -16,6 +16,8 @@
 
 =for HTML <a href="https://metacpan.org/pod/Net::PublicSuffixList"><img src="https://img.shields.io/cpan/v/Net-PublicSuffixList.svg" /></A>
 
+=for HTML <a href="https://doi.org/10.5281/zenodo.6171343"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.6171343.svg" /></A>
+
 =head1 The Net::PublicSuffixList module
 
 This is the I<README> for the L<Net::PublicSuffixList> Perl module.
