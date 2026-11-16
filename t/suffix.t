@@ -94,6 +94,7 @@ subtest remove_suffix => sub {
 
 	$result = $obj->remove_suffix( $suffix );
 	isa_ok( $result, $class, 'remove_suffix returns the object' );
+	ok( ! $obj->suffix_exists( $suffix ), "Suffix <$suffix> no longer exists" );
 
 	};
 
@@ -115,7 +116,7 @@ subtest parse_list => sub {
 	isa_ok( $result, $class );
 
 	foreach my $suffix ( @suffixes ) {
-		ok( $obj->suffix_exists( $suffix ), "Suffix <$suffix> does not exist yet" );
+		ok( $obj->suffix_exists( $suffix ), "Suffix <$suffix> now exists" );
 		}
 	};
 

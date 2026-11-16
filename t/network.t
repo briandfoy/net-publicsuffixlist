@@ -77,7 +77,7 @@ SKIP: {
 				cache_dir => $cache_dir,
 				);
 			isa_ok( $obj, $class );
-			is( $obj->{source}, 'net_cached', 'source parameter is "net_cache"' );
+			is( $obj->{source}, 'net_cached', 'source parameter is "net_cached"' );
 			};
 
 		subtest local_file => sub {
