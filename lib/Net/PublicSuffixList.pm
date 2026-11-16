@@ -38,7 +38,7 @@ Net::PublicSuffixList - The Mozilla Public Suffix List
 =head1 DESCRIPTION
 
 I mostly wrote this because I was working on L<App::url> and needed a
-way to figure out which part of a URL was the registered part and with
+way to figure out which part of a URL was the registered part and which
 was the top-level domain.
 
 The Public Suffix List is essentially a self-reported collection of the
@@ -172,7 +172,7 @@ sub add_suffix ( $self, $suffix ) {
 
 =item remove_suffix( STRING )
 
-Remove the STRING as a known public suffices. This returns the object
+Remove the STRING as a known public suffix. This returns the object
 itself.
 
 =cut
@@ -189,7 +189,7 @@ sub suffix_exists ( $self, $suffix ) { exists $self->{suffix}{$suffix} ? $self :
 
 =item suffixes_in( HOST )
 
-Return an array reference of the publix suffixes in HOST, sorted from
+Return an array reference of the public suffixes in HOST, sorted from
 shortest to longest.
 
 =cut
