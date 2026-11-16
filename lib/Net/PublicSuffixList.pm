@@ -1,8 +1,7 @@
 package Net::PublicSuffixList;
 use v5.26;
 use strict;
-use feature qw(signatures);
-no warnings qw(experimental::signatures);
+use experimental qw(signatures);
 
 use warnings;
 no warnings;
