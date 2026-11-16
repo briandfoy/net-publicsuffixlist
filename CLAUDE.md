@@ -66,12 +66,17 @@ hand with `add_suffix` and `remove_suffix`.
 ## Committing
 
 * Claude may commit in this repo when a person asks it to.
-* Make Claude the author and brian d foy the co-author:
+* By default, the person who asked is the author. Use a plain
+  `git commit` so the author comes from their git configuration.
+* Only when the person says to, make Claude the author and the person
+  the co-author. Replace `MODEL_NAME` with the name of the Claude model
+  making the commit. The co-author comes from `git config user.name`
+  and `git config user.email`:
 
 ```bash
-git commit --author="Claude <noreply@anthropic.com>" \
+git commit --author="Claude MODEL_NAME <noreply@anthropic.com>" \
 	-m "subject" \
-	-m "Co-Authored-By: brian d foy <briandfoy@pobox.com>"
+	-m "Co-Authored-By: $(git config user.name) <$(git config user.email)>"
 ```
 
 * Don't push.
