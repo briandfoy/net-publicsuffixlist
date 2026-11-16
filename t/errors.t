@@ -9,7 +9,7 @@ my $warnings;
 local $SIG{'__WARN__'} = sub { $warnings .= $_[0] };
 
 subtest sanity => sub {
-	use_ok( $class ) or BAILOUT( "$class did not compile" );
+	use_ok( $class ) or BAIL_OUT( "$class did not compile" );
 	can_ok( $class, 'new' );
 	};
 
