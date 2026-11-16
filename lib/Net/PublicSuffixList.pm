@@ -12,7 +12,7 @@ use File::Basename        qw(basename dirname);
 use File::Path            qw(make_path);
 use File::Spec::Functions qw(catfile);
 
-our $VERSION = '0.503';
+our $VERSION = '0.504';
 
 =encoding utf8
 
