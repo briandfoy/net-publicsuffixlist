@@ -143,8 +143,9 @@ sub parse_list ( $self, $list ) {
 		}
 
 	my( $line_ending ) = $$list =~ m/(\R)/;
+	local $/ = $line_ending;
+
 	open my $string_fh, '<:utf8', $list;
-	$string_fh->input_record_separator( $line_ending );
 
 	while( <$string_fh> ) {
 		chomp;
