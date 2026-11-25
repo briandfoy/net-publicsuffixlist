@@ -203,4 +203,20 @@ subtest suffixes => sub {
 		}
 	};
 
+subtest case_insensitive => sub {
+	$warnings = undef;
+
+	my $obj = $class->new( no_net => 1, no_local => 1 );
+	like $warnings, qr/No way to fetch/, 'got fetch warning';
+
+	my $list = "co.uk\nuk\n";
+	$obj->parse_list( \$list );
+
+	for my $host ( qw( sub.example.co.uk sub.example.CO.uk sub.example.CO.UK ) ) {
+		my $r = $obj->split_host( $host );
+		is( $r->{suffix}, 'co.uk',       "suffix for $host" );
+		is( $r->{short},  'sub.example', "short for $host" );
+		}
+	};
+
 done_testing();

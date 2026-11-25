@@ -166,6 +166,7 @@ characters. Some sources specify C<*.foo.bar>, but this adds C<foo.bar>.
 
 sub add_suffix ( $self, $suffix ) {
 	$suffix =~ s/\A[*.]+//;
+	$suffix = lc $suffix;
 	$self->{suffix}{$suffix}++;
 	$self
 	}
@@ -195,7 +196,7 @@ shortest to longest.
 =cut
 
 sub suffixes_in ( $self, $host ) {
-	my @parts = reverse split /\./, $host;
+	my @parts = reverse split /\./, lc($host);
 	my @suffixes =
 		map  { $_->[0] }
 		grep { $_->[1] }
@@ -229,7 +230,7 @@ Returns a hash reference with these keys:
 
 sub split_host ( $self, $host ) {
 	my $suffix = $self->longest_suffix_in( $host );
-	my $short  = $host =~ s/\Q.$suffix\E\z//r;
+	my $short  = $host =~ s/\Q.$suffix\E\z//ri;
 
 	return	{
 		host   => $host,
