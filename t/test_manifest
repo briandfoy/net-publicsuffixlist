@@ -3,4 +3,5 @@ pod.t
 pod_coverage.t
 suffix.t
 errors.t
+cve/CVE-2026-129980.t
 network.t
