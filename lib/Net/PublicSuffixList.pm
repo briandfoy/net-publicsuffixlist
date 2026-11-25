@@ -83,6 +83,7 @@ sub new ( $class, %args ) {
 
 sub _init ( $self, $args ) {
 	my %args = ( $self->defaults->%*, $args->%* );
+	$self->{max_depth} = 0;
 
 	while( my($k, $v) = each %args ) {
 		$self->{$k} = $v;
@@ -168,6 +169,8 @@ sub add_suffix ( $self, $suffix ) {
 	$suffix =~ s/\A[*.]+//;
 	$suffix = lc $suffix;
 	$self->{suffix}{$suffix}++;
+	my $depth = scalar( split /\./, $suffix );
+	$self->{max_depth} = $depth if $depth > $self->{max_depth};
 	$self
 	}
 
@@ -197,12 +200,14 @@ shortest to longest.
 
 sub suffixes_in ( $self, $host ) {
 	my @parts = reverse split /\./, lc($host);
+	my $cap = $#parts;
+	$cap = $self->{max_depth} - 1 if $self->{max_depth} && $self->{max_depth} - 1 < $cap;
 	my @suffixes =
 		map  { $_->[0] }
 		grep { $_->[1] }
 		map  { [ $_, $self->suffix_exists( $_ ) ] }
     	map  { join '.', reverse @parts[0..$_] }
-    	0 .. $#parts;
+    	0 .. $cap;
 
 	\@suffixes;
 	}
