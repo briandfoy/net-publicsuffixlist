@@ -1,5 +1,24 @@
 # Changes for Net::PublicSuffixList
 
+0.99_02 2026-11-26T09:41:00Z
+	* Fix Changes
+
+0.99_01 2026-11-26T09:36:00Z
+	* Fix CVE-2026-129978: host and suffix lookups are case-insensitive.
+	* Fix CVE-2026-129979: internationalized suffixes and hosts match in
+	  either Unicode or punycode form. This adds Net::IDN::Encode as a
+	  prerequisite.
+	* Fix CVE-2026-129980: suffixes_in no longer does quadratic work on
+	  hosts with many labels. It checks no more labels than the deepest
+	  rule has.
+	* Fix CVE-2026-129977: wildcard rules such as *.ck are stored with
+	  their marker and match exactly one label, so *.ck no longer makes
+	  ck itself a public suffix. parse_list no longer strips the leading
+	  *. from rules.
+	* add_suffix rejects invalid suffixes (such as *, *foo, *.*.com, or
+	  labels with spaces or underscores) with a warning. A single leading
+	  dot is stripped, so .*.com is the wildcard rule *.com.
+
 0.504 2026-11-16T04:43:20Z
 	* silence a warning (#11)
 
@@ -16,5 +35,5 @@
 	* Make this a user release
 
 0.001_01 2020-01-08T03:55:52Z
-	* First release. 
+	* First release.
 

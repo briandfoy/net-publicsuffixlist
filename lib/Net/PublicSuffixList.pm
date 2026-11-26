@@ -12,7 +12,7 @@ use File::Path            qw(make_path);
 use File::Spec::Functions qw(catfile);
 use Net::IDN::Encode      qw(domain_to_ascii domain_to_unicode);
 
-our $VERSION = '0.99_01';
+our $VERSION = '0.99_02';
 
 =encoding utf8
 
