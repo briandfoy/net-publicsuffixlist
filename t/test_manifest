@@ -7,4 +7,5 @@ public_suffix.t
 errors.t
 cve/CVE-2026-129979.t
 cve/CVE-2026-129980.t
+cve/CVE-2026-129977.t
 network.t
