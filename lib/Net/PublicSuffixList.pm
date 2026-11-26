@@ -10,6 +10,7 @@ use Carp                  qw(carp);
 use File::Basename        qw(basename dirname);
 use File::Path            qw(make_path);
 use File::Spec::Functions qw(catfile);
+use Net::IDN::Encode      qw(domain_to_ascii domain_to_unicode);
 
 our $VERSION = '0.504';
 
@@ -51,6 +52,11 @@ This module can fetch the most current one for you, use one that you
 provide locally, or even let you completely make it up. You can add
 entries you want but don't show up in the list, and remove ones you don't
 think should be there.
+
+Hostname and suffix matching is case-insensitive. Internationalized
+names are handled transparently: rules and hosts may be passed in
+either Unicode or punycode form, and the module stores both forms so
+lookups match regardless of spelling.
 
 =over 4
 
@@ -150,7 +156,6 @@ sub parse_list ( $self, $list ) {
 	while( <$string_fh> ) {
 		chomp;
 		next if( /\A\s*\z/ || m|\A\s*//| );
-		s/\A\Q*.//;
 		$self->add_suffix( $_ );
 		}
 	$self;
@@ -163,38 +168,105 @@ Add STRING to the known public suffices. This returns the object itself.
 Before this adds the suffix, it strips off leading C<*> and C<.*>
 characters. Some sources specify C<*.foo.bar>, but this adds C<foo.bar>.
 
+The suffix is folded to lowercase before storage, since DNS labels are
+case-insensitive.
+
+If the suffix contains non-ASCII characters, its punycode form is also
+stored so that hosts arriving in either spelling match the same rule.
+If the suffix contains C<xn--> labels, its Unicode form is likewise
+stored. Both conversions go through L<Net::IDN::Encode>.
+
 =cut
 
-sub add_suffix ( $self, $suffix ) {
-	$suffix =~ s/\A[*.]+//;
+sub _forms ( $self, $suffix ) {
 	$suffix = lc $suffix;
-	$self->{suffix}{$suffix}++;
-	my $depth = scalar( split /\./, $suffix );
-	$self->{max_depth} = $depth if $depth > $self->{max_depth};
+	$suffix =~ s/\A\.//;
+	my $has_wildcard = $suffix =~ s/\A\*\.//; # only one level
+
+	my $ascii;
+	unless( $ascii = eval { domain_to_ascii( $suffix ) } ) {
+		carp "The suffix <$suffix> is invalid";
+		return;
+		}
+
+	unless( $ascii =~ /\A[a-z0-9-]+(?:\.[a-z0-9-]+)*\z/ ) {
+		carp "The suffix <$suffix> is invalid";
+		return;
+		}
+
+	my @forms = ( $suffix );
+	push @forms, $ascii if $ascii ne $suffix;
+
+	if( $suffix =~ /(?:\A|\.)xn--/ ) {
+		my $unicode = eval { domain_to_unicode( $suffix ) };
+		push @forms, $unicode if defined $unicode && $unicode ne $suffix;
+		}
+
+	@forms = map { "*.$_" } @forms if $has_wildcard;
+
+	@forms;
+	}
+
+sub add_suffix ( $self, $suffix ) {
+	my @forms = $self->_forms( $suffix );
+	unless( @forms ) {
+		carp "Invalid suffix <$suffix>";
+		return $self;
+		}
+
+	foreach my $form ( @forms ) {
+		$self->{suffix}{$form}++;
+		my $depth = ( $form =~ tr/.// ) + 1;
+		$self->{max_depth} = $depth if $depth > $self->{max_depth};
+		}
+
 	$self
 	}
 
 =item remove_suffix( STRING )
 
-Remove the STRING as a known public suffix. This returns the object
-itself.
+Remove STRING as a known public suffix. This returns the object itself.
+
+STRING is normalised the same way as in L</add_suffix>: leading C<*>
+and C<.> characters are stripped and the result is folded to
+lowercase. If STRING has a punycode or Unicode counterpart, that form
+is removed too, so a rule stored by either spelling can be removed by
+passing either one.
 
 =cut
 
-sub remove_suffix ( $self, $suffix ) { delete $self->{suffix}{$suffix}; $self }
+sub remove_suffix ( $self, $suffix ) {
+	foreach my $form ( $self->_forms( $suffix ) ) {
+		delete $self->{suffix}{$form};
+		}
+	$self
+	}
 
 =item suffix_exists( STRING )
 
 Return the invocant if the suffix exists, and the empty list otherwise.
 
+STRING is normalised the same way as in L</add_suffix>, and its
+punycode or Unicode counterpart is also checked. Any match returns the
+invocant.
+
 =cut
 
-sub suffix_exists ( $self, $suffix ) { exists $self->{suffix}{$suffix} ? $self : () }
+sub suffix_exists ( $self, $suffix ) {
+	foreach my $form ( $self->_forms( $suffix ) ) {
+		return $self if exists $self->{suffix}{$form};
+		}
+	return;
+	}
 
 =item suffixes_in( HOST )
 
 Return an array reference of the public suffixes in HOST, sorted from
 shortest to longest.
+
+HOST is folded to lowercase before lookup. HOST should be a Perl
+character string (not UTF-8 octets); pass Unicode hostnames with
+C<\x{...}> escapes or decode with L<Encode/decode_utf8> first.
 
 =cut
 
@@ -202,12 +274,20 @@ sub suffixes_in ( $self, $host ) {
 	my @parts = reverse split /\./, lc($host);
 	my $cap = $#parts;
 	$cap = $self->{max_depth} - 1 if $self->{max_depth} && $self->{max_depth} - 1 < $cap;
-	my @suffixes =
-		map  { $_->[0] }
-		grep { $_->[1] }
-		map  { [ $_, $self->suffix_exists( $_ ) ] }
-    	map  { join '.', reverse @parts[0..$_] }
-    	0 .. $cap;
+	my @suffixes;
+	foreach my $i ( 0 .. $cap ) {
+		my $candidate = join '.', reverse @parts[0..$i];
+
+		if( $self->suffix_exists( $candidate ) ) {
+			push @suffixes, $candidate;
+			next;
+			}
+
+		next if $i == 0; # a bare TLD has no label for the *
+
+		my $parent = join '.', reverse @parts[0..$i-1];
+		push @suffixes, $candidate if $self->suffix_exists( "*.$parent" );
+		}
 
 	\@suffixes;
 	}
@@ -230,6 +310,10 @@ Returns a hash reference with these keys:
 	suffix  the longest public suffix
     short   the input value with the public suffix
               (and leading dot) removed
+
+HOST may be in Unicode or punycode form. The returned C<suffix> and
+C<short> preserve the spelling of HOST: Unicode in yields Unicode
+out, punycode in yields punycode out.
 
 =cut
 

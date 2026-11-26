@@ -87,6 +87,7 @@ my %WriteMakefile = (
 		'File::Path'            => '0',
 		'File::Spec::Functions' => '0',
 		'Mojolicious'           => '8',
+		'Net::IDN::Encode'      => '0',
 		},
 
 	'META_MERGE' => {

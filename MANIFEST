@@ -13,12 +13,15 @@ MANIFEST.SKIP
 README.pod
 SECURITY.md
 t/cache/public_suffix_list.dat
+t/cve/CVE-2026-129979.t
 t/cve/CVE-2026-129980.t
 t/errors.t
+t/forms.t
 t/load.t
 t/network.t
 t/pod.t
 t/pod_coverage.t
+t/public_suffix.t
 t/suffix.t
 t/test_manifest
 xt/citation.t

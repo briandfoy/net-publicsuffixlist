@@ -1,7 +1,10 @@
 load.t
 pod.t
 pod_coverage.t
+forms.t
 suffix.t
+public_suffix.t
 errors.t
+cve/CVE-2026-129979.t
 cve/CVE-2026-129980.t
 network.t

@@ -1,4 +1,5 @@
 use v5.26;
+use utf8;
 use Test::More 1;
 use File::Spec::Functions qw(catfile);
 use Mojo::Util            qw(dumper);
@@ -41,6 +42,16 @@ subtest add_suffix => sub {
 	isa_ok( $result, $class, 'add_suffix returns the object' );
 
 	ok( $obj->suffix_exists( $suffix ), "Suffix <$suffix> now exists" );
+
+	subtest bad_suffixes => sub {
+		foreach my $bad ( '', '*', '*foo', '*.*.com', 'foo bar', 'foo_bar', 'foo..bar' ) {
+			$warnings = undef;
+			my $result = $obj->add_suffix( $bad );
+			isa_ok( $result, $class, "add_suffix returns the object for <$bad>" );
+			like $warnings, qr/invalid/i, "got invalid warning for <$bad>";
+			ok( ! $obj->suffix_exists( $bad ), "Suffix <$bad> does not exist" );
+			}
+		};
 	};
 
 subtest remove_suffix => sub {
@@ -72,7 +83,7 @@ subtest parse_list => sub {
 	can_ok( $obj, 'parse_list' );
 	like $warnings, qr/No way to fetch/, 'got fetch warning';
 
-	my @suffixes = qw( co.uk foo.bar com );
+	my @suffixes = qw( co.uk foo.bar com *.net );
 	foreach my $suffix ( @suffixes ) {
 		ok( ! $obj->suffix_exists( $suffix ), "Suffix <$suffix> does not exist yet" );
 		}
@@ -84,35 +95,6 @@ subtest parse_list => sub {
 
 	foreach my $suffix ( @suffixes ) {
 		ok( $obj->suffix_exists( $suffix ), "Suffix <$suffix> now exists" );
-		}
-	};
-
-subtest parse_list_strip => sub {
-	$warnings = undef;
-
-	my $obj = $class->new( no_net => 1, no_local => 1 );
-	can_ok( $obj, 'parse_list' );
-	like $warnings, qr/No way to fetch/, 'got fetch warning';
-
-	my @suffixes = (
-		[ qw( *.com    com   ) ],
-		[ qw( *net     net   ) ],
-		[ qw( *.co.uk  co.uk ) ],
-		);
-	foreach my $pair ( @suffixes ) {
-		foreach my $suffix ( $pair->@* ) {
-			ok( ! $obj->suffix_exists( $suffix ), "Suffix <$suffix> does not exist yet" );
-			}
-		}
-
-	my $body = join "\n", map { $_->[0] } @suffixes;
-
-	my $result = $obj->parse_list( \$body );
-	isa_ok( $result, $class );
-
-	foreach my $pair ( @suffixes ) {
-		ok(   $obj->suffix_exists( $pair->[1] ), "Suffix <$pair->[1]> now exists for <$pair->[0]>" );
-		ok( ! $obj->suffix_exists( $pair->[0] ), "Suffix <$pair->[0]> does not exist" );
 		}
 	};
 
@@ -129,9 +111,14 @@ subtest local_path => sub {
 	is( $obj->local_path, $local_path );
 	is( $obj->{source}, 'local_file' );
 
-	my @suffixes = qw( com net co.uk email badger koala.au );
-	foreach my $suffix ( @suffixes ) {
+	my @good_suffixes = qw( net co.uk email badger koala.au );
+	foreach my $suffix ( @good_suffixes ) {
 		ok( $obj->suffix_exists( $suffix ), "Suffix <$suffix> exists" );
+		}
+
+	my @bad_suffixes = qw( com snoopy linus pie );
+	foreach my $suffix ( @bad_suffixes ) {
+		ok( ! $obj->suffix_exists( $suffix ), "Suffix <$suffix> does not exist" );
 		}
 	};
 
@@ -167,7 +154,33 @@ subtest suffixes => sub {
 		is( $result->{suffix}, 'koala.au' );
 		is( $result->{short}, 'wildfire' );
 		is( $result->{host}, $host );
-		}
+		};
+
+	subtest split_host_idn => sub {
+		$obj->add_suffix( '公司.cn' );
+
+		my @cases = (
+			[ 'shop.公司.cn',       '公司.cn'       ],
+			[ 'shop.xn--55qx5d.cn', 'xn--55qx5d.cn' ],
+			);
+
+		foreach my $case ( @cases ) {
+			my( $idn_host, $suffix ) = $case->@*;
+			my $result = $obj->split_host( $idn_host );
+			is( $result->{suffix}, $suffix,   "suffix for <$idn_host>" );
+			is( $result->{short},  'shop',    "short for <$idn_host>" );
+			is( $result->{host},   $idn_host, "host for <$idn_host>" );
+			}
+		};
+
+	subtest split_host_no_suffix => sub {
+		foreach my $bad_host ( 'shop.公司.jp', 'shop.xn--55qx5d.jp', 'example.org', '' ) {
+			my $result = $obj->split_host( $bad_host );
+			is( $result->{suffix}, undef,     "no suffix for <$bad_host>" );
+			is( $result->{short},  $bad_host, "short is the host for <$bad_host>" );
+			is( $result->{host},   $bad_host, "host for <$bad_host>" );
+			}
+		};
 	};
 
 subtest case_insensitive => sub {
