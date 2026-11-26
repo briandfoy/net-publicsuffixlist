@@ -8,4 +8,5 @@ errors.t
 cve/CVE-2026-129979.t
 cve/CVE-2026-129980.t
 cve/CVE-2026-129977.t
+cve/CVE-2026-129978.t
 network.t
