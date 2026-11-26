@@ -2,6 +2,7 @@
 
 0.99_02 2026-11-26T09:41:00Z
 	* Fix Changes
+	* handle exceptions
 
 0.99_01 2026-11-26T09:36:00Z
 	* Fix CVE-2026-129978: host and suffix lookups are case-insensitive.

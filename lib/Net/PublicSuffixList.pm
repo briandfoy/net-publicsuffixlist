@@ -181,7 +181,13 @@ stored. Both conversions go through L<Net::IDN::Encode>.
 sub _forms ( $self, $suffix ) {
 	$suffix = lc $suffix;
 	$suffix =~ s/\A\.//;
+	my $is_exception = $suffix =~ s/\A!//;
 	my $has_wildcard = $suffix =~ s/\A\*\.//; # only one level
+
+	if( $is_exception && $has_wildcard ) {
+		carp "The suffix <$suffix> is invalid";
+		return;
+		}
 
 	my $ascii;
 	unless( $ascii = eval { domain_to_ascii( $suffix ) } ) {
@@ -203,6 +209,7 @@ sub _forms ( $self, $suffix ) {
 		}
 
 	@forms = map { "*.$_" } @forms if $has_wildcard;
+	@forms = map { "!$_" }  @forms if $is_exception;
 
 	@forms;
 	}
@@ -278,6 +285,12 @@ sub suffixes_in ( $self, $host ) {
 	my @suffixes;
 	foreach my $i ( 0 .. $cap ) {
 		my $candidate = join '.', reverse @parts[0..$i];
+
+		if( $i > 0 && $self->suffix_exists( "!$candidate" ) ) {
+			my $parent = join '.', reverse @parts[0..$i-1];
+			push @suffixes, $parent unless @suffixes && $suffixes[-1] eq $parent;
+			last;
+			}
 
 		if( $self->suffix_exists( $candidate ) ) {
 			push @suffixes, $candidate;

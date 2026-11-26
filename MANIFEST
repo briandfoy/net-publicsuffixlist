@@ -18,6 +18,7 @@ t/cve/CVE-2026-129978.t
 t/cve/CVE-2026-129979.t
 t/cve/CVE-2026-129980.t
 t/errors.t
+t/exception.t
 t/forms.t
 t/load.t
 t/network.t
