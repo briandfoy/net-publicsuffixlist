@@ -274,6 +274,7 @@ sub suffixes_in ( $self, $host ) {
 	my @parts = reverse split /\./, lc($host);
 	my $cap = $#parts;
 	$cap = $self->{max_depth} - 1 if $self->{max_depth} && $self->{max_depth} - 1 < $cap;
+
 	my @suffixes;
 	foreach my $i ( 0 .. $cap ) {
 		my $candidate = join '.', reverse @parts[0..$i];
