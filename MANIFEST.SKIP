@@ -89,3 +89,4 @@ Net-.*
 ^AGENTS\.md
 ^CLAUDE\.md
 ^\.claude
+^CHANGES-.*
