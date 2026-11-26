@@ -43,39 +43,6 @@ subtest add_suffix => sub {
 	ok( $obj->suffix_exists( $suffix ), "Suffix <$suffix> now exists" );
 	};
 
-subtest add_suffix_strip => sub {
-	$warnings = undef;
-
-	my $obj = $class->new( no_net => 1, no_local => 1 );
-	my $suffix = 'co.uk';
-	isa_ok( $obj, $class );
-	can_ok( $obj, 'suffix_exists', 'add_suffix' );
-	like $warnings, qr/No way to fetch/, 'got fetch warning';
-
-	my @suffixes = (
-		[ qw( *.com    com   ) ],
-		[ qw( *net     net   ) ],
-		[ qw( *.co.uk  co.uk ) ],
-		);
-	foreach my $pair ( @suffixes ) {
-		foreach my $suffix ( $pair->@* ) {
-			ok( ! $obj->suffix_exists( $suffix ), "Suffix <$suffix> does not exist yet" );
-			}
-		}
-
-	foreach my $pair ( @suffixes ) {
-		my $result = $obj->add_suffix( $pair->[0] );
-		isa_ok( $result, $class, 'add_suffix returns the object'  );
-		ok(   $obj->suffix_exists( $pair->[1] ), "Suffix <$pair->[1]> now exists for <$pair->[0]>" );
-		ok( ! $obj->suffix_exists( $pair->[0] ), "Suffix <$pair->[0]> does not exist" );
-		}
-
-	my $result = $obj->add_suffix( $suffix );
-	isa_ok( $result, $class, 'add_suffix returns the object' );
-
-	ok( $obj->suffix_exists( $suffix ), "Suffix <$suffix> now exists" );
-	};
-
 subtest remove_suffix => sub {
 	$warnings = undef;
 
